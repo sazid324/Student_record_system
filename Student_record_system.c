@@ -80,38 +80,36 @@ void add_student_record()
     printf("\n\t\t\t\t\tName             : ");
     fflush(stdin);
     fgets(stdnt.full_name, 200, stdin);
-    fprintf(fptr, "\t\t\t\t\tName             : ");
     fputs(stdnt.full_name, fptr);
 
     printf("\n\t\t\t\t\tRoll No          : ");
     scanf("%d", &stdnt.roll);
-    fprintf(fptr, "\t\t\t\t\tRoll No          : %d", stdnt.roll);
+    fprintf(fptr, "%d", stdnt.roll);
 
     printf("\n\t\t\t\t\tClass            : ");
     scanf("%d", &stdnt.class);
-    fprintf(fptr, "\n\t\t\t\t\tClass            : %d", stdnt.class);
+    fprintf(fptr, "%d", stdnt.class);
 
     printf("\n\t\t\t\t\tSection          : ");
     getchar();
     scanf("%c", &stdnt.section);
     stdnt.section = toupper(stdnt.section);
-    fprintf(fptr, "\n\t\t\t\t\tsection          : %c", stdnt.section);
+    fprintf(fptr, "%c", stdnt.section);
 
     printf("\n\t\t\t\t\tMarks of Bangla  : ");
     scanf("%f", &stdnt.marks_of_bangla);
-    fprintf(fptr, "\n\t\t\t\t\tMarks of Bangla  : %.2f", stdnt.marks_of_bangla);
+    fprintf(fptr, "%.2f", stdnt.marks_of_bangla);
 
     printf("\n\t\t\t\t\tMarks of English : ");
     scanf("%f", &stdnt.marks_of_english);
-    fprintf(fptr, "\n\t\t\t\t\tMarks of English : %.2f", stdnt.marks_of_english);
+    fprintf(fptr, "%.2f", stdnt.marks_of_english);
 
     printf("\n\t\t\t\t\tMarks of Math    : ");
     scanf("%f", &stdnt.marks_of_math);
-    fprintf(fptr, "\n\t\t\t\t\tMarks of Math    : %.2f", stdnt.marks_of_math);
+    fprintf(fptr, "%.2f", stdnt.marks_of_math);
 
     stdnt.total = stdnt.marks_of_bangla + stdnt.marks_of_english + stdnt.marks_of_math;
-    fprintf(fptr, "\n\t\t\t\t\tTotal            : %.2f", stdnt.total);
-    fprintf(fptr, "\n\n\n");
+    fprintf(fptr, "%.2f", stdnt.total);
 
     fclose(fptr);
 
@@ -154,12 +152,16 @@ void student_records()
 
     printf("\n\n\t\t\t\t\t==========STUDENT RECORDS==========\n\n");
 
-    ch = fgetc(fptr);
-
-    while (ch != EOF)
+    while (fread(&stdnt, sizeof(stdnt), 1, fptr))
     {
-        printf("%c", ch);
-        ch = fgetc(fptr);
+        printf("\n\t\t\t\t\tName             : %s", stdnt.full_name);
+        printf("\n\t\t\t\t\tRoll No          : %d", stdnt.roll);
+        printf("\n\t\t\t\t\tClass            : %d", stdnt.class);
+        printf("\n\t\t\t\t\tsection          : %c", stdnt.section);
+        printf("\n\t\t\t\t\tMarks of Bangla  : %.2f", stdnt.marks_of_bangla);
+        printf("\n\t\t\t\t\tMarks of English : %.2f", stdnt.marks_of_english);
+        printf("\n\t\t\t\t\tMarks of Math    : %.2f", stdnt.marks_of_math);
+        printf("\n\t\t\t\t\tTotal            : %.2f", stdnt.total);
     }
 
     fclose(fptr);
@@ -174,7 +176,8 @@ gotoInStudentsRecord:
     {
         system("cls");
     }
-    else{
+    else
+    {
         printf("\n\t\t\t\t\tPress ENTER to go back....");
         getchar();
         scanf("%c", &enterInStudentsRecord);
@@ -184,6 +187,55 @@ gotoInStudentsRecord:
 
 void search_student_records()
 {
+    system("cls");
+
+    int roll;
+    char enterInSearchStudentsRecord;
+
+    FILE *fptr;
+
+    fptr = fopen("student_records.txt", "r");
+
+    printf("\n\n\t\t\t\t\t==========SEARCH STUDENT'S RECORDS==========\n\n");
+
+    printf("\n\n\t\t\t\t\tEnter the Roll No: ");
+    scanf("%d", &roll);
+
+    while (fread(&stdnt, sizeof(struct students), 1, fptr))
+    {
+
+        if (stdnt.roll == roll)
+        {
+            printf("\n\t\t\t\t\tName             : %s", stdnt.full_name);
+            printf("\n\t\t\t\t\tRoll No          : %d", stdnt.roll);
+            printf("\n\t\t\t\t\tClass            : %d", stdnt.class);
+            printf("\n\t\t\t\t\tsection          : %c", stdnt.section);
+            printf("\n\t\t\t\t\tMarks of Bangla  : %.2f", stdnt.marks_of_bangla);
+            printf("\n\t\t\t\t\tMarks of English : %.2f", stdnt.marks_of_english);
+            printf("\n\t\t\t\t\tMarks of Math    : %.2f", stdnt.marks_of_math);
+            printf("\n\t\t\t\t\tTotal            : %.2f", stdnt.total);
+        }
+    }
+
+    fclose(fptr);
+
+    printf("\n\n\t\t\t\t\tPress ENTER to go back....");
+    getchar();
+    scanf("%c", &enterInSearchStudentsRecord);
+
+gotoInSearchStudentsRecord:
+
+    if (enterInSearchStudentsRecord == '\n')
+    {
+        system("cls");
+    }
+    else
+    {
+        printf("\n\t\t\t\t\tPress ENTER to go back....");
+        getchar();
+        scanf("%c", &enterInSearchStudentsRecord);
+        goto gotoInSearchStudentsRecord;
+    }
 }
 
 void delete_student_records()
