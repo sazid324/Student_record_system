@@ -97,7 +97,7 @@ void add_student_record()
         }
     }
 
-    printf("\n\n\t\t\t\t\t==========ADD STUDENT'S INFORMATION==========\n\n");
+    printf("\n\n\t\t\t\t\t==========ADD STUDENT'S RECORD==========\n\n");
 
     printf("\n\t\t\t\t\tName             : ");
     getchar();
@@ -225,7 +225,7 @@ void search_student_records()
 
     FILE *fptr;
 
-    fptr = fopen("student_records.txt", "r");
+    fptr = fopen("student_records.txt", "rb");
 
     if (fptr == NULL)
     {
@@ -246,7 +246,7 @@ void search_student_records()
         }
     }
 
-    printf("\n\n\t\t\t\t\t==========SEARCH STUDENT'S RECORDS==========\n\n");
+    printf("\n\n\t\t\t\t\t==========SEARCH STUDENT'S RECORD==========\n\n");
 
     printf("\n\n\t\t\t\t\tEnter the Roll No: ");
     scanf("%d", &roll);
@@ -264,10 +264,6 @@ void search_student_records()
             printf("\n\n\t\t\t\t\tMarks of Math    : %.2f", stdnt.subj.marks_of_math);
             printf("\n\n\t\t\t\t\tTotal            : %.2f", stdnt.total);
             printf("\n\n\t\t\t\t\t______________________________________________");
-        }
-        else
-        {
-            printf("\n\n\t\t\t\t\tRecord not found...");
         }
     }
 
@@ -294,4 +290,84 @@ gotoInSearchStudentsRecord:
 
 void delete_student_records()
 {
+    system("cls");
+
+    int rollUWantToDelete;
+    char enterInDeleteStudentsRecord;
+
+    FILE *fptr, *fptrTemp;
+
+    fptr = fopen("student_records.txt", "rb");
+    fptrTemp = fopen("temp.txt", "ab");
+
+    if (fptr == NULL)
+    {
+        char ext;
+        printf("An Error Occurred\n\n");
+        printf("\n\n\t\t\t\t\tPress ENTER to exit....");
+        scanf("%c", &ext);
+    gotoInIfStatementIfFptrIsNULL:
+        if (ext == '\n')
+        {
+            exit(1);
+        }
+        else
+        {
+            printf("\n\n\t\t\t\t\tPress ENTER to exit....");
+            scanf("%c", &ext);
+            goto gotoInIfStatementIfFptrIsNULL;
+        }
+    }
+
+    printf("\n\n\t\t\t\t\t==========DELETE STUDENT'S RECORD==========\n\n");
+
+    printf("\n\n\t\t\t\t\tEnter the Roll No that you want to delete: ");
+    scanf("%d", &rollUWantToDelete);
+
+    while (fread(&stdnt, sizeof(stdnt), 1, fptr))
+    {
+        if (stdnt.roll == rollUWantToDelete)
+        {
+            printf("\n\t\t\t\t\tName             : %s", stdnt.full_name);
+            printf("\n\n\t\t\t\t\tRoll No          : %d", stdnt.roll);
+            printf("\n\n\t\t\t\t\tClass            : %d", stdnt.class);
+            printf("\n\n\t\t\t\t\tsection          : %c", stdnt.section);
+            printf("\n\n\t\t\t\t\tMarks of Bangla  : %.2f", stdnt.subj.marks_of_bangla);
+            printf("\n\n\t\t\t\t\tMarks of English : %.2f", stdnt.subj.marks_of_english);
+            printf("\n\n\t\t\t\t\tMarks of Math    : %.2f", stdnt.subj.marks_of_math);
+            printf("\n\n\t\t\t\t\tTotal            : %.2f", stdnt.total);
+            printf("\n\n\t\t\t\t\t______________________________________________\n\n\n");
+        }
+
+        if (stdnt.roll != rollUWantToDelete)
+        {
+            fwrite(&stdnt, sizeof(stdnt), 1, fptrTemp);
+        }
+    }
+
+    fclose(fptr);
+    fclose(fptrTemp);
+
+    remove("student_records.txt");
+    rename("temp.txt", "student_records.txt");
+
+    printf("\n\n\t\t\t\t\tRecord deleted succesfully....");
+
+    printf("\n\n\t\t\t\t\tPress ENTER to go back....");
+    getchar();
+    scanf("%c", &enterInDeleteStudentsRecord);
+
+gotoInDeleteStudentsRecord:
+
+    if (enterInDeleteStudentsRecord == '\n')
+    {
+        system("cls");
+    }
+    else
+    {
+        printf("\n\t\t\t\t\tPress ENTER to go back....");
+        getchar();
+        scanf("%c", &enterInDeleteStudentsRecord);
+        goto gotoInDeleteStudentsRecord;
+    }
 }
