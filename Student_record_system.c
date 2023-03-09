@@ -1,22 +1,25 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
+#include <string.h>
 
 void add_student_record();
 void student_records();
 void search_student_records();
 void delete_student_records();
-void exit_student_record();
 
 struct students
 {
-    char full_name[200];
+    char full_name[100];
     int roll;
     int class;
     char section;
-    float marks_of_bangla;
-    float marks_of_english;
-    float marks_of_math;
+    struct subjects
+    {
+        float marks_of_bangla;
+        float marks_of_english;
+        float marks_of_math;
+    } subj;
     float total;
     float gpa;
     char grade[3];
@@ -52,7 +55,7 @@ top:
         delete_student_records();
         break;
     case 5:
-        exit_student_record();
+        exit(1);
         break;
     default:
         system("cls");
@@ -73,43 +76,51 @@ void add_student_record()
 
     FILE *fptr;
 
-    fptr = fopen("student_records.txt", "a");
+    fptr = fopen("student_records.txt", "ab");
+
+    if (fptr == NULL)
+    {
+        char ext;
+        printf("An Error Occurred\n\n");
+        printf("\n\n\t\t\t\t\tPress ENTER to exit....");
+        scanf("%c", &ext);
+    gotoInIfStatementIfFptrIsNULL:
+        if (ext == '\n')
+        {
+            exit(1);
+        }
+        else
+        {
+            printf("\n\n\t\t\t\t\tPress ENTER to exit....");
+            scanf("%c", &ext);
+            goto gotoInIfStatementIfFptrIsNULL;
+        }
+    }
 
     printf("\n\n\t\t\t\t\t==========ADD STUDENT'S INFORMATION==========\n\n");
 
     printf("\n\t\t\t\t\tName             : ");
-    fflush(stdin);
-    fgets(stdnt.full_name, 200, stdin);
-    fputs(stdnt.full_name, fptr);
-
+    getchar();
+    fgets(stdnt.full_name, sizeof(stdnt.full_name), stdin);
+    stdnt.full_name[strcspn(stdnt.full_name, "\n")] = '\0';
     printf("\n\t\t\t\t\tRoll No          : ");
     scanf("%d", &stdnt.roll);
-    fprintf(fptr, "%d", stdnt.roll);
-
     printf("\n\t\t\t\t\tClass            : ");
     scanf("%d", &stdnt.class);
-    fprintf(fptr, "%d", stdnt.class);
-
     printf("\n\t\t\t\t\tSection          : ");
     getchar();
     scanf("%c", &stdnt.section);
     stdnt.section = toupper(stdnt.section);
-    fprintf(fptr, "%c", stdnt.section);
-
     printf("\n\t\t\t\t\tMarks of Bangla  : ");
-    scanf("%f", &stdnt.marks_of_bangla);
-    fprintf(fptr, "%.2f", stdnt.marks_of_bangla);
-
+    scanf("%f", &stdnt.subj.marks_of_bangla);
     printf("\n\t\t\t\t\tMarks of English : ");
-    scanf("%f", &stdnt.marks_of_english);
-    fprintf(fptr, "%.2f", stdnt.marks_of_english);
-
+    scanf("%f", &stdnt.subj.marks_of_english);
     printf("\n\t\t\t\t\tMarks of Math    : ");
-    scanf("%f", &stdnt.marks_of_math);
-    fprintf(fptr, "%.2f", stdnt.marks_of_math);
+    scanf("%f", &stdnt.subj.marks_of_math);
 
-    stdnt.total = stdnt.marks_of_bangla + stdnt.marks_of_english + stdnt.marks_of_math;
-    fprintf(fptr, "%.2f", stdnt.total);
+    stdnt.total = stdnt.subj.marks_of_bangla + stdnt.subj.marks_of_english + stdnt.subj.marks_of_math;
+
+    fwrite(&stdnt, sizeof(stdnt), 1, fptr);
 
     fclose(fptr);
 
@@ -144,24 +155,44 @@ void student_records()
 {
     system("cls");
 
-    char ch, enterInStudentsRecord;
+    char enterInStudentsRecord;
 
     FILE *fptr;
 
-    fptr = fopen("student_records.txt", "r");
+    fptr = fopen("student_records.txt", "rb");
+
+    if (fptr == NULL)
+    {
+        char ext;
+        printf("An Error Occurred\n\n");
+        printf("\n\n\t\t\t\t\tPress ENTER to exit....");
+        scanf("%c", &ext);
+    gotoInIfStatementIfFptrIsNULL:
+        if (ext == '\n')
+        {
+            exit(1);
+        }
+        else
+        {
+            printf("\n\n\t\t\t\t\tPress ENTER to exit....");
+            scanf("%c", &ext);
+            goto gotoInIfStatementIfFptrIsNULL;
+        }
+    }
 
     printf("\n\n\t\t\t\t\t==========STUDENT RECORDS==========\n\n");
 
     while (fread(&stdnt, sizeof(stdnt), 1, fptr))
     {
         printf("\n\t\t\t\t\tName             : %s", stdnt.full_name);
-        printf("\n\t\t\t\t\tRoll No          : %d", stdnt.roll);
-        printf("\n\t\t\t\t\tClass            : %d", stdnt.class);
-        printf("\n\t\t\t\t\tsection          : %c", stdnt.section);
-        printf("\n\t\t\t\t\tMarks of Bangla  : %.2f", stdnt.marks_of_bangla);
-        printf("\n\t\t\t\t\tMarks of English : %.2f", stdnt.marks_of_english);
-        printf("\n\t\t\t\t\tMarks of Math    : %.2f", stdnt.marks_of_math);
-        printf("\n\t\t\t\t\tTotal            : %.2f", stdnt.total);
+        printf("\n\n\t\t\t\t\tRoll No          : %d", stdnt.roll);
+        printf("\n\n\t\t\t\t\tClass            : %d", stdnt.class);
+        printf("\n\n\t\t\t\t\tsection          : %c", stdnt.section);
+        printf("\n\n\t\t\t\t\tMarks of Bangla  : %.2f", stdnt.subj.marks_of_bangla);
+        printf("\n\n\t\t\t\t\tMarks of English : %.2f", stdnt.subj.marks_of_english);
+        printf("\n\n\t\t\t\t\tMarks of Math    : %.2f", stdnt.subj.marks_of_math);
+        printf("\n\n\t\t\t\t\tTotal            : %.2f", stdnt.total);
+        printf("\n\n\t\t\t\t\t______________________________________________\n\n\n");
     }
 
     fclose(fptr);
@@ -196,24 +227,47 @@ void search_student_records()
 
     fptr = fopen("student_records.txt", "r");
 
+    if (fptr == NULL)
+    {
+        char ext;
+        printf("An Error Occurred\n\n");
+        printf("\n\n\t\t\t\t\tPress ENTER to exit....");
+        scanf("%c", &ext);
+    gotoInIfStatementIfFptrIsNULL:
+        if (ext == '\n')
+        {
+            exit(1);
+        }
+        else
+        {
+            printf("\n\n\t\t\t\t\tPress ENTER to exit....");
+            scanf("%c", &ext);
+            goto gotoInIfStatementIfFptrIsNULL;
+        }
+    }
+
     printf("\n\n\t\t\t\t\t==========SEARCH STUDENT'S RECORDS==========\n\n");
 
     printf("\n\n\t\t\t\t\tEnter the Roll No: ");
     scanf("%d", &roll);
 
-    while (fread(&stdnt, sizeof(struct students), 1, fptr))
+    while (fread(&stdnt, sizeof(stdnt), 1, fptr))
     {
-
         if (stdnt.roll == roll)
         {
             printf("\n\t\t\t\t\tName             : %s", stdnt.full_name);
-            printf("\n\t\t\t\t\tRoll No          : %d", stdnt.roll);
-            printf("\n\t\t\t\t\tClass            : %d", stdnt.class);
-            printf("\n\t\t\t\t\tsection          : %c", stdnt.section);
-            printf("\n\t\t\t\t\tMarks of Bangla  : %.2f", stdnt.marks_of_bangla);
-            printf("\n\t\t\t\t\tMarks of English : %.2f", stdnt.marks_of_english);
-            printf("\n\t\t\t\t\tMarks of Math    : %.2f", stdnt.marks_of_math);
-            printf("\n\t\t\t\t\tTotal            : %.2f", stdnt.total);
+            printf("\n\n\t\t\t\t\tRoll No          : %d", stdnt.roll);
+            printf("\n\n\t\t\t\t\tClass            : %d", stdnt.class);
+            printf("\n\n\t\t\t\t\tsection          : %c", stdnt.section);
+            printf("\n\n\t\t\t\t\tMarks of Bangla  : %.2f", stdnt.subj.marks_of_bangla);
+            printf("\n\n\t\t\t\t\tMarks of English : %.2f", stdnt.subj.marks_of_english);
+            printf("\n\n\t\t\t\t\tMarks of Math    : %.2f", stdnt.subj.marks_of_math);
+            printf("\n\n\t\t\t\t\tTotal            : %.2f", stdnt.total);
+            printf("\n\n\t\t\t\t\t______________________________________________");
+        }
+        else
+        {
+            printf("\n\n\t\t\t\t\tRecord not found...");
         }
     }
 
@@ -239,9 +293,5 @@ gotoInSearchStudentsRecord:
 }
 
 void delete_student_records()
-{
-}
-
-void exit_student_record()
 {
 }
